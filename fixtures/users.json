@@ -1,0 +1,98 @@
+[
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$xjr9Lob0fJnFzl2EMo3Yib$qmpxddjGhB28WP8avE5Af4zaEPVh0kz0n7I0lMyuv1U=",
+        "last_login": "2025-01-22T19:06:38.886Z",
+        "is_superuser": true,
+        "username": "",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2025-01-19T16:59:01.678Z",
+        "email": "admin@shop.com",
+        "avatar": "",
+        "phone_number": "",
+        "country": null,
+        "token": null,
+        "is_verified": false,
+        "is_manager": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$8sVtnUd6jMiGWaT78MpnvV$t7RfeJsLJjgohCczkIKD7IX9H8Ulmdgm8f+DUcPYcx4=",
+        "last_login": "2025-01-22T11:45:54.296Z",
+        "is_superuser": false,
+        "username": "searpent",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-01-19T19:29:28.434Z",
+        "email": "searpent@yandex.ru",
+        "avatar": "",
+        "phone_number": "",
+        "country": null,
+        "token": null,
+        "is_verified": true,
+        "is_manager": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$malUcPc1vJVh1yQBMFCzXB$eTfTlo5Xj/iiijfa7e7ZyRqy10uLOtCJIgRs/E2NrHI=",
+        "last_login": "2025-01-21T13:24:50.566Z",
+        "is_superuser": false,
+        "username": "t1@t.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-01-21T08:41:56.972Z",
+        "email": "t1@t.com",
+        "avatar": "",
+        "phone_number": "",
+        "country": null,
+        "token": null,
+        "is_verified": false,
+        "is_manager": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 5,
+    "fields": {
+        "password": "pbkdf2_sha256$870000$1PePci8KUFOVPUVakidkjC$c0qZ6VXkYtmGlAzkZx7UvXZXJI/+14+4jKj2/xjqZ40=",
+        "last_login": "2025-01-22T19:06:52.064Z",
+        "is_superuser": false,
+        "username": "manager@shop.com",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-01-21T13:45:33.531Z",
+        "email": "manager@shop.com",
+        "avatar": "",
+        "phone_number": "",
+        "country": null,
+        "token": null,
+        "is_verified": false,
+        "is_manager": false,
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
