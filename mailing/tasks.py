@@ -1,19 +1,22 @@
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
-from .models import Mailing, MailingAttempt, MailingLog, Client
+from .models import Mailing, MailingLog, Client
 import logging
 
 logger = logging.getLogger(__name__)
 
-
 def send_mailing():
     current_time = timezone.now()
-    mailings = Mailing.objects.filter(start_time__lte=current_time, status='running') # выбираем рассылки у которых время начала раньше настоящего момента
+    mailings = Mailing.objects.filter(start_time__lte=current_time, status='running')  # выбираем рассылки у которых время начала раньше настоящего момента
 
     for mailing in mailings:
         log_message = f"Начало отправки рассылки {mailing.id}"
-        MailingLog.objects.create(mailing=mailing, status='start', message=log_message)
+        MailingLog.objects.create(
+            mailing=mailing,
+            status='running',
+            message=log_message
+        )
         logger.info(log_message)
 
         for client in mailing.clients.all():
@@ -25,25 +28,31 @@ def send_mailing():
                     recipient_list=[client.email],
                     fail_silently=False,
                 )
-                status = True
+                status = 'successful'
                 server_response = "Success"
                 error_message = ""
             except Exception as e:
-                status = False
+                status = 'failed'
                 server_response = str(e)
                 error_message = f"Ошибка при отправке: {str(e)}"
                 logger.error(f"Ошибка при отправке рассылки {mailing.id} клиенту {client.email}: {str(e)}")
 
-            MailingAttempt.objects.create(
+            # Логирование попытки отправки в журнал
+            MailingLog.objects.create(
                 mailing=mailing,
                 client=client,
                 status=status,
+                message=f"Отправка сообщения для клиента {client.email}",
                 server_response=server_response,
                 error_message=error_message
             )
 
         log_message = f"Завершение отправки рассылки {mailing.id}"
-        MailingLog.objects.create(mailing=mailing, status='end', message=log_message)
+        MailingLog.objects.create(
+            mailing=mailing,
+            status='completed',
+            message=log_message
+        )
         logger.info(log_message)
 
         # Обновление времени следующей отправки в зависимости от периодичности

@@ -27,7 +27,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    #username = None  # Убираем стандартное поле username
+    # Убираем стандартное поле username
     email = models.EmailField(
         unique=True,
         verbose_name=_("Email"),
@@ -43,7 +43,7 @@ class User(AbstractUser):
     phone_number = models.CharField(
         max_length=35,
         blank=False,
-        null = False,
+        null=False,
         verbose_name=_("Номер телефона"),
         help_text=_("Введите номер телефона")
     )
@@ -59,24 +59,18 @@ class User(AbstractUser):
         blank=True,
         null=True,
         verbose_name=_("Token"),
-        help_text=_("Укажите страну проживания")
+        help_text=_("Укажите токен для подтверждения")
     )
-    is_verified = models.BooleanField(default=False)
-    is_manager = models.BooleanField(default=False)
 
-    '''tg_name = models.CharField(
-        max_length=50,
-        verbose_name=_("Ник телеграм"),
-        blank = True,
-        null = True,
-        help_text=_("Укажите страну проживания"))'''
 
     USERNAME_FIELD = 'email'  # Устанавливаем email как поле для авторизации
     REQUIRED_FIELDS = []  # Убираем обязательное поле username
 
     objects = CustomUserManager()  # Используем наш менеджер
+
     class Meta:
         verbose_name = _("Пользователь")
         verbose_name_plural = _("Пользователи")
+
     def __str__(self):
         return self.email

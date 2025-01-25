@@ -5,4 +5,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('mailing.urls')),
     path('blog/', include('blog.urls')),
+    path('users/', include('users.urls')),  # Подключаем URL-ы приложения users
 ]

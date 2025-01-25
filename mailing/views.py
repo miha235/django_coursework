@@ -64,13 +64,13 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
-class ClientDetailView(DetailView):
+class ClientDetailView(LoginRequiredMixin,DetailView):
     ''' Контроллер для отображения свойств выбранного Клиента '''
     model = Client
     template_name = 'mailing/client_detail.html'
 
 
-class ClientUpdateView(UpdateView):
+class ClientUpdateView(LoginRequiredMixin,UpdateView):
     ''' Контроллер для обновления свойств выбранного Клиента '''
     model = Client
     template_name = 'mailing/client_form.html'
@@ -78,7 +78,7 @@ class ClientUpdateView(UpdateView):
     success_url = reverse_lazy('client_list')
 
 
-class ClientDeleteView(DeleteView):
+class ClientDeleteView(LoginRequiredMixin, DeleteView):
     ''' Контроллер для удаления Клиента '''
     model = Client
     template_name = 'mailing/client_confirm_delete.html'
@@ -86,7 +86,7 @@ class ClientDeleteView(DeleteView):
 
 
 #@method_decorator(cache_page(60 * 5), name='dispatch') <- кэширование сообщений приводит к тому, что новое сообщение не видно в списке без перезапуска приложения. Увы.
-class MessageListView(ListView):
+class MessageListView(LoginRequiredMixin,ListView):
     ''' Контроллер для отображения списка Сообщений'''
     model = Message
     template_name = 'mailing/message_list.html'
@@ -97,13 +97,13 @@ class MessageListView(ListView):
             return Message.objects.all()
         return Message.objects.filter(owner=self.request.user)
 
-class MessageDetailView(DetailView):
+class MessageDetailView(LoginRequiredMixin,DetailView):
     ''' Контроллер для отображения деталей Сообщения'''
     model = Message
     template_name = 'mailing/message_detail.html'
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin,CreateView):
     ''' Контроллер для создания нового Сообщения'''
     model = Message
     fields = ['subject', 'body']
@@ -115,7 +115,7 @@ class MessageCreateView(CreateView):
         return super().form_valid(form)
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(LoginRequiredMixin,UpdateView):
     '''  Контроллер для формы редактирования деталей Сообщения'''
     model = Message
     template_name = 'mailing/message_form.html'
@@ -123,7 +123,7 @@ class MessageUpdateView(UpdateView):
     success_url = reverse_lazy('message_list')
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(LoginRequiredMixin,DeleteView):
     ''' Контроллер для удаления Сообщения'''
     model = Message
     template_name = 'mailing/message_confirm_delete.html'
@@ -165,7 +165,7 @@ class MailingForm(forms.ModelForm):
         }
 
 
-class MailingUpdateView(UpdateView):
+class MailingUpdateView(LoginRequiredMixin, UpdateView):
     ''' Контроллер для формы редактирования Рассылки'''
     model = Mailing
     form_class = MailingForm
@@ -190,7 +190,7 @@ class MailingUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class MailingCreateView(CreateView):
+class MailingCreateView(LoginRequiredMixin, CreateView):
     ''' Контроллер для формы создания Рассылки'''
     model = Mailing
     form_class = MailingForm
@@ -218,7 +218,7 @@ class MailingDeleteView(LoginRequiredMixin, OwnerRequiredMixin, DeleteView):
     success_url = reverse_lazy('mailing_list')
 
 
-class MailingStatusView(View):
+class MailingStatusView(LoginRequiredMixin, View):
     ''' Контроллер с функцией изменения статуса Рассылки запустить -> приостановить -> возобновить'''
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
@@ -233,7 +233,7 @@ class MailingStatusView(View):
         return redirect('mailing_detail', pk=pk)
 
 
-class MailingAttemptStatsView(ListView):
+class MailingAttemptStatsView(LoginRequiredMixin, ListView):
     ''' Контроллер отображения статистики по отправке Рассылок '''
     model = Mailing
     template_name = 'mailing/mailing_attempt_stats.html'
@@ -247,7 +247,7 @@ class MailingAttemptStatsView(ListView):
         )
 
 
-class MailingAttemptDetailView(DetailView):
+class MailingAttemptDetailView(LoginRequiredMixin, DetailView):
     ''' Контроллер отображения деталей Рассылки - все Попытки с сортировкой по убыванию даты'''
 
     model = Mailing
@@ -374,3 +374,24 @@ class CustomLogoutView(LogoutView):
     def get_success_url(self):
         """Переопределите метод, чтобы перенаправить пользователя после успешного входа."""
         return self.success_url
+
+
+
+class IndexView(TemplateView):
+    template_name = 'mailing/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Выбираем три случайных поста
+        total_posts = BlogPost.objects.count()
+        if total_posts >= 3:
+            context['random_posts'] = BlogPost.objects.order_by('?')[:3]
+        else:
+            context['random_posts'] = BlogPost.objects.all()
+
+        # Пример данных для статистики
+        context['total_mailings'] = 10
+        context['active_mailings'] = 5
+        context['unique_clients'] = 20
+        return context
+

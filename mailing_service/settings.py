@@ -132,6 +132,8 @@ SCHEDULER_CONFIG = {
     'apscheduler.job_defaults.coalesce': 'false',
     'apscheduler.job_defaults.max_instances': '3',
     'apscheduler.timezone': 'UTC',
+
+
 }
 
 # Интервал запуска задачи рассылки (в секундах)
