@@ -137,7 +137,7 @@ class MailingListView(LoginRequiredMixin, ListView):
     template_name = 'mailing/mailing_list.html'
 
     def get_queryset(self):
-        if self.request.user.is_manager: # админу видны все Рассылки
+        if self.request.user.groups.filter(name='Managers').exists(): # админу видны все Рассылки
             return Mailing.objects.all()
         return Mailing.objects.filter(owner=self.request.user) # обычным пользователям - только созданные ими Рассылки
 
@@ -146,7 +146,7 @@ class OwnerRequiredMixin(UserPassesTestMixin):
     ''' Класс-примесь для проверки того, что объект (Рассылка) принадлежит запросившему Пользователю или пользователь относится к группе Менеджеров'''
     def test_func(self):
         obj = self.get_object()
-        return obj.owner == self.request.user or self.request.user.is_manager
+        return obj.owner == self.request.user or self.request.user.groups.filter(name='Managers').exists()
 
 
 class MailingDetailView(LoginRequiredMixin, OwnerRequiredMixin, DetailView):
@@ -203,14 +203,6 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-# class MailingUpdateView(LoginRequiredMixin, OwnerRequiredMixin, UpdateView):
-#     ''' Простой Контроллер для формы редактирования Рассылки'''
-#     model = Mailing
-#     template_name = 'mailing/mailing_form.html'
-#     fields = ['subject', 'message', 'clients', 'start_time', 'periodicity']
-#     success_url = reverse_lazy('mailing_list')
-
-
 class MailingDeleteView(LoginRequiredMixin, OwnerRequiredMixin, DeleteView):
     ''' Контроллер для удаления Рассылки'''
     model = Mailing
@@ -260,7 +252,7 @@ class MailingAttemptDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class MailingLogListView(ListView):
+class MailingLogListView(LoginRequiredMixin,ListView):
     ''' Контроллер отображения лога Рассылки'''
     model = MailingLog
     template_name = 'mailing/mailing_log_list.html'
@@ -296,20 +288,20 @@ class StatisticsView(TemplateView):
 class ManagerRequiredMixin(UserPassesTestMixin):
     ''' Класс-примесь для управления доступом - проверяет, является ли пользователь менеджером'''
     def test_func(self):
-        return self.request.user.is_manager
+        return self.request.user.groups.filter(name='Managers').exists()
 
 
 class SignUpView(CreateView):
     ''' Контроллер для создания нового Пользователя'''
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('login')
-    template_name = 'registration/signup.html'
+    template_name = 'users/registration/signup.html'
 
 
 class CustomLoginView(LoginView):
     ''' Контроллер для логина Пользователя'''
     form_class = CustomAuthenticationForm
-    template_name = 'registration/login.html'
+    template_name = 'users/registration/login.html'
 
     def form_valid(self, form):
         remember_me = form.cleaned_data.get('remember_me')
@@ -339,7 +331,7 @@ class ManagerMailingListView(UserPassesTestMixin, ListView):
     template_name = 'mailing/manager_mailing_list.html'
 
     def test_func(self):
-        return self.request.user.is_manager
+        return self.request.user.groups.filter(name='Managers').exists()
 
 
 class ManagerUserListView(UserPassesTestMixin, ListView):
@@ -347,7 +339,7 @@ class ManagerUserListView(UserPassesTestMixin, ListView):
     template_name = 'mailing/manager_user_list.html'
 
     def test_func(self):
-        return self.request.user.is_manager
+        return self.request.user.groups.filter(name='Managers').exists()
 
 
 class UserBlockView(LoginRequiredMixin, ManagerRequiredMixin, UpdateView):
