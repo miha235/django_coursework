@@ -2,23 +2,16 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.views import LoginView, LogoutView
 from django.views import View
 from .models import Client, Message, Mailing, MailingLog
 from django.shortcuts import get_object_or_404, render,  redirect
 from django.db.models import Count
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
-from django.contrib.auth.views import LoginView
-from django.contrib.auth import login, authenticate, logout
 from blog.models import BlogPost
 from django.views.decorators.cache import cache_page
 from django.shortcuts import redirect
 from django import forms
 from django.contrib.auth import get_user_model
 import logging
-from .forms import CustomAuthenticationForm
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -291,35 +284,6 @@ class ManagerRequiredMixin(UserPassesTestMixin):
         return self.request.user.groups.filter(name='Managers').exists()
 
 
-class SignUpView(CreateView):
-    ''' Контроллер для создания нового Пользователя'''
-    form_class = CustomUserCreationForm
-    success_url = reverse_lazy('login')
-    template_name = 'users/registration/signup.html'
-
-
-class CustomLoginView(LoginView):
-    ''' Контроллер для логина Пользователя'''
-    form_class = CustomAuthenticationForm
-    template_name = 'users/registration/login.html'
-
-    def form_valid(self, form):
-        remember_me = form.cleaned_data.get('remember_me')
-        if not remember_me:
-            self.request.session.set_expiry(0)
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return self.get_redirect_url() or reverse('client_list')
-
-
-def verify_email(request, user_id):
-    ''' Функция проверки верификации пользователя'''
-    user = CustomUser.objects.get(id=user_id)
-    user.is_verified = True
-    user.save()
-    return redirect('login')
-
 class UserListView(LoginRequiredMixin, ManagerRequiredMixin, ListView):
     ''' Просмотр Пользователей сервиса'''
     model = CustomUser
@@ -355,17 +319,6 @@ class MailingDeactivateView(LoginRequiredMixin, ManagerRequiredMixin, UpdateView
     template_name = 'mailing/mailing_deactivate.html'
     success_url = reverse_lazy('mailing_list')
 
-
-#def custom_logout(request):
-#    logout(request)
-#    return redirect('main_page')
-
-class CustomLogoutView(LogoutView):
-    success_url = reverse_lazy('main_page')
-
-    def get_success_url(self):
-        """Переопределите метод, чтобы перенаправить пользователя после успешного входа."""
-        return self.success_url
 
 
 

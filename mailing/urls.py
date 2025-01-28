@@ -1,16 +1,6 @@
 from django.urls import path
 from . import views
-from .views import (
-    SignUpView, CustomLoginView, CustomLogoutView, verify_email
-)
 
-# Маршруты для аутентификации
-auth_patterns = [
-    path('signup/', SignUpView.as_view(), name='signup'),
-    path('login/', CustomLoginView.as_view(), name='login'),
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
-    path('verify/<int:user_id>/', verify_email, name='verify_email'),
-]
 
 # Маршруты для клиентов
 client_patterns = [
@@ -62,8 +52,7 @@ main_page_patterns = [
 
 # Объединение всех маршрутов
 urlpatterns = (
-    auth_patterns
-    + client_patterns
+    client_patterns
     + message_patterns
     + mailing_patterns
     + stats_and_logs_patterns
